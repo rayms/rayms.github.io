@@ -14,7 +14,7 @@ baseurl: ""
 # Of course don't forget to change the username and projectname to YOUR username and project
 
 # Name of website
-title: Raymond M. Serrato
+title: Ray M. Serrato
 
 # Short description of your site
 description: Blogging about data and democracy
@@ -50,7 +50,7 @@ avatar: "/img/ray.png"
 # Change all these values or delete the ones you don't want.
 # Important: you must keep the "name" parameter, everything else you can remove
 author:
-  name: Raymond M. Serrato 
+  name: Ray M. Serrato 
   email: "raymondmserrato@gmail.com"
   github: rayms    
   twitter: raymserrato   
