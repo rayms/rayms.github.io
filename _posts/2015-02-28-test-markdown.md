@@ -9,13 +9,11 @@ gh-badge:
   - follow
 published: true
 ---
-In an ironic twist, in August, election observers fell under scrutiny when Kenya's Supreme Court declared the presidential vote invalid - after most observation groups deemed the polls genuine. This isn't the first time election observers have come under criticism. Scholars like T[homas Carothers](http://carnegieendowment.org/files/Carothers_-_The_Observers_Observed.pdf) were criticizing their "amateurish work" as far back as the late 1990s.  
+![]({{site.baseurl}}/img/observers.jpg)
 
-Others, like [Judith Kelley](https://sites.duke.edu/kelley/files/2012/03/JOD.pdf), have used statistical analysist to look at how different monitoring organizations have observed the same elections, but reached quite different conclusions. Her research suggests that election observers are more likely to endorse elections where the country is a foreign-aid recipient or where the election observers are part of missions from inter-governmental organisations, like the European Union (EU) or the Organization for Security and Cooperation in Europe (OSCE). Kelley's research also suggests that non-governmental organizations are likely to be more independent in their conclusions. 
+In an ironic twist, in August, election observers fell under scrutiny when Kenya's Supreme Court declared the presidential vote invalid - after most observation groups deemed the polls genuine. This isn't the first time election observers have come under criticism. Scholars like T[homas Carothers](http://carnegieendowment.org/files/Carothers_-_The_Observers_Observed.pdf) were criticizing their "amateurish work" as far back as the late 1990s.  Others, like [Judith Kelley](https://sites.duke.edu/kelley/files/2012/03/JOD.pdf), have used statistical analysist to look at how different monitoring organizations have observed the same elections, but reached quite different conclusions. Her research suggests that election observers are more likely to endorse elections where the country is a foreign-aid recipient or where the election observers are part of missions from inter-governmental organisations, like the European Union (EU) or the Organization for Security and Cooperation in Europe (OSCE).  
 
-I've always been interested in this question. In theory, election observers should adhere to the _Declaration of Principles for International Election Observation_ - a document endorsed by some 40 international and non-governmental election monitoring organizations - which lays out specific guidelines for their behaviour. Many of the most reputable organizations follow these guidelines closely, and they include election observers from the OSCE, the EU, the Organization of American States (OAS), and non-governmental organizations like The Carter Center (TCC) and the National Democratic Institute (NDI).
-
-The reports of election observers are usually highly diplomatic texts and for good reason; their reports are often highly publicized and are used as a source about the quality of an election. Research has shown that the mere presence of observers can deter or displace fraud, cause would-be riggers to tinker with laws well before election day, and reduce the chances of election-related violence.
+I've always been interested in this question. In theory, election observers should adhere to the _Declaration of Principles for International Election Observation_ - a document endorsed by some 40 international and non-governmental election monitoring organizations - which lays out specific guidelines for their behaviour. Many of the most reputable organizations follow these guidelines closely and the reports of election observers are usually highly diplomatic texts and for good reason. Research has shown that the mere presence of observers can deter or displace fraud, cause would-be riggers to tinker with laws well before election day, and reduce the chances of election-related violence.
 
 Thinking about election reports, I wondered if we could apply tidytext analysis to tease out the nuances. Can we use tidytext to tell us more about how election observers write about elections? 
 
@@ -34,8 +32,6 @@ library(pdftools)
 osce_reports <- read_html("http://www.osce.org/resources/documents/%22Final%20Report%22?page=1&filters=%20im_taxonomy_vid_3%3A%28120%29%20im_taxonomy_vid_1%3A%2824%29%20im_taxonomy_vid_22%3A%28472%29&solrsort=score%20desc&rows=50&category=Official%20Documents")
 
 osce <- read_html("http://www.osce.org")
-
-#use selectorgadget to select the right part of the HTML page where I want to get the URLs, in this case the 'English' link to reports. this also selected other links on the page that I didn't want though, so there was more work to do
 
 #get links 
 links <- osce_reports %>%
@@ -74,3 +70,5 @@ for (url in links_full) {
                 Sys.sleep(10))
 }
 ~~~
+![osce_eu_top_words.jpeg]({{site.baseurl}}/img/osce_eu_top_words.jpeg)
+
