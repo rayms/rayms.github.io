@@ -1,11 +1,6 @@
 ---
 layout: post
 title: How do election observers write about elections? A tidytext analysis
-gh-repo: daattali/beautiful-jekyll
-gh-badge:
-  - star
-  - fork
-  - follow
 published: true
 date: '2017-12-22'
 ---
