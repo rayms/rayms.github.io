@@ -12,13 +12,15 @@ I've always been interested in this question. In theory, election observers shou
 
 Can we use text mining to tell us more about how election observers write about elections? What words are used the most? What is the average sentiment of reports? Is this different for the tpe of election (parliamentary or presidential)? Doe sentiment analysis work - that is, does it reflect whether or not the observers endorsed the election? 
 
+(Warning that there's a ton of R code incoming, so if you're more interested in the analysis, scroll down below!).
+
 
 
 #**Getting the data**
 
 To start, I went to the OSCE website and used their internal search engine to search for the reports I needed. The first page of search results gave me only 50 reports and I scraped all of those links (and the following two pages by repeating the code - not very efficient, I know). 
 
-````
+~~~
 library(rvest)
 library(stringr)
 library(lubridate)
@@ -41,7 +43,7 @@ links_df <- do.call(rbind, lapply(links, data.frame, stringsAsFactors=FALSE))
 
 #rename the first column
 names(links_df) <- "url"
-````
+~~~
 
 At this point, I noticed that in getting the links to the PDF reports, I also grabbed a lot of extra links that I didn't need. In the next step, I had to filter out all of that junk.
 
@@ -57,13 +59,13 @@ links_full <- paste("http://www.osce.org", links_df_subset$url, sep = "")
 
 ~~~
 
-I was nearly ready to begin scraping the PDFs, but I checked first what the OSCE site says about scraping by using 
+I was nearly ready to begin scraping the PDFs, but I checked first what the OSCE site says about scraping by using: 
 
 ~~~
 robotstxt::get_robotstxt("http://www.eods.eu")
 ~~~
 
-It showed a crawl delay of 10 seconds, so I set my system to sleep for 10 seconds between downloading each PDF.
+Which showed a crawl delay of 10 seconds, so I set 10 seconds between downloading each PDF.
 
 ~~~
 #loop to download reports
@@ -72,9 +74,9 @@ for (url in links_full) {
                 Sys.sleep(10))
 }
 ~~~
-I did this a few more times and ended up with 141 election reports after deleting any duplicates. (Note: From going through Stack Overflow questions, I'm pretty sure I could have set this up to scrape through the following pages of search results on the OSCE site, but I wasn't quite ready to start trying to figure that out. . .). 
+I did this a few more times and ended up with 141 election reports after deleting any duplicates. (Note: From going through Stack Overflow questions, I'm pretty sure I could have set this up to scrape through the other pages of search results on the OSCE site, but I wasn't quite ready to start trying to figure that out. . .). 
 
-There was one rather big problem with my approach though. I would need to read the PDF files into R in such a way that they could be associated with my variables of interest (country, type of election, and year). Since I had downloaded the files using the basename of their URLs on the OSCE site, this was kind of a mess. In the end, I settled on a filenaming system that looked something like this: "myanmar_parl2015.pdf". This way I could read the files into R using the filename as a variable, and create additional variables based on the filename - an approach I figured out using [this excellent answer](https://stackoverflow.com/questions/44254493/tidytext-read-files-from-folder) on Stack Overflow, by the creator of tidytext herself.
+There was one rather big problem with my approach though. I would need to read the PDF files into R in such a way that they could be associated with my variables of interest (country, type of election, and year). Since I had downloaded the files using the basename of their URLs on the OSCE site - and the filenaming conventions for these PDFs were all over the place - this was kind of a mess. In the end, I settled on a filenaming system that looked something like this: "myanmar_parl2015.pdf". This way I could read the files into R using the filename as a variable, and create additional variables based on the filename - an approach I figured out using [this excellent answer](https://stackoverflow.com/questions/44254493/tidytext-read-files-from-folder) on Stack Overflow, by one of the developers of [tidytext](https://cran.r-project.org/web/packages/tidytext/index.html), [Julia Silge](https://juliasilge.com). 
 
 ~~~
 #list all files ending with extension .pdf
@@ -128,7 +130,7 @@ I finally had a dataframe as a "one-row-per-term document" for tidy analysis.
 10 uzbekistan_pres2007.pdf President 2007-01-01 Uzbekistan        diloram         OSCE
 # ... with 1,171,517 more rows
 ~~~
-In the interest of time - and to get to the analysis - I'm going to skip the code that I used to get the data for EU Election Observation Missions. I scraped the data from the Election Observation and Democracy Support (EODS) [website](http://www.eods.eu/eom-reports/), and ended up with 76 reports after excluding non-English language reports. I did the same steps as for the OSCE reports, then combined the dataframes. This left me with a rather large dataframe of 2,240,218 observations. 
+In the interest of time - and to get to the analysis - I'm going to skip the code that I used to get the data for EU Election Observation Missions. Basically, I scraped the data from the [Election Observation and Democracy Support (EODS) website](http://www.eods.eu/eom-reports/), and ended up with 76 reports after excluding non-English language reports. In total, I now had **217 eelction observation reports** ranging from 1997-2017 (but really, it was just one report in 1997, and most reports began from 2002) that covered **89 different countries**. Great! When I combined the OSCE and EU dataframes, I had a pretty large dataframe with 2,240,218 observations.
 
 Let's see which words are used the most often in election observation reports. After removing stop words and other words like "eu", "osce", "odihr, "eom", "elections," etc., we have the following bar chart.  
 
@@ -136,26 +138,26 @@ Let's see which words are used the most often in election observation reports. A
 
 This is interesting because some of the most common words allude to specific issues related to elections, like political parties, candidates and campaigning; polling and the release of results; and voting and election day. 
 
-We can also facet by the organization type and see which words were the most common for each.
+We can also facet by the organization type and see which words were the most common for each organization.
 
 ![osce_eu_facet_words.jpeg]({{site.baseurl}}/img/osce_eu_facet_words.jpeg)
 
 We can see slight differences in the most common words, but not much. Words like "parliamentary," "complaints," and "legal" are among the most common for the OSCE reports, whereas the EU reports contain "presidential," "stations," and (voter) "registration." 
 
 
-# **Which human rights treaties do election observers reference?** 
-Election observers  use international law as a standard to measure the quality of elections. This means assessing different elements of an election against the international treaties and obligations that a country has ratified. The most relevant international treaty is called the International Covenant on Civil and Political Rights (ICCPR). Can we look at the election observer reports to see which treaties they reference the most? 
+## **Which human rights treaties do election observers reference?** 
+Election observers  use international law as a standard to measure the quality of elections. This means assessing different elements of an election against the international treaties and obligations that a country has ratified. The most relevant international treaty for elections is called the International Covenant on Civil and Political Rights (ICCPR). Can we look at the election observer reports to see which treaties they reference the most? 
 
 ![eu_osce_ref_conventions.jpeg]({{site.baseurl}}/img/eu_osce_ref_conventions.jpeg)
 
-Unsurprisingly, the ICCPR is the most referenced treaty. Next is the Convention on the Elimination of All Forms of Discrimination Against Women (CEDAW), the Universal Declaration of Human Rights (UDHR), and the Convention on the Rights of the Child (CRC). 
+Unsurprisingly, the ICCPR is the most referenced treaty. Next is the Convention on the Elimination of All Forms of Discrimination Against Women (CEDAW), the Universal Declaration of Human Rights (UDHR), and the Convention on the Rights of the Child (CRC). I have to admit that the last one surprised me.  
 
-# **How often do election observers use the word "fraud"?**
+## **How often do election observers use the word "fraud"?**
 Election observers are generally cautious about leveling allegations of electoral fraud, so how often do they use the term in their reports? 
 
 ![fraud_mentions.jpeg]({{site.baseurl}}/img/fraud_mentions.jpeg)
 
-There are relatively few references to fraud in almost two decades worth of reports. But there were two years where mentions of fraud were higher than normal, in 2009 and 2014. What elections might have contributed to this?
+There are relatively few references to fraud in almost two decades worth of reports. But there were two years where mentions of fraud were quite high, in 2009 and 2014. What elections might have contributed to this?
 
 ~~~
 # A tibble: 117 x 3
@@ -175,5 +177,43 @@ There are relatively few references to fraud in almost two decades worth of repo
 # ... with 107 more rows
 ~~~
 
-Both the 2009 and 2014 presidential elections in Afghanistan were marred by ballot stuffing and other forms of fraud (for great analysis of detecting voter fraud with data, check out Development Seed's [take](https://developmentseed.org/blog/2014/07/28/afghanistan-runoff-site/) on the 2014 Afghanistan elections).
+Both the 2009 and 2014 presidential elections in Afghanistan were marred by ballot stuffing and other forms of fraud (for great analysis of detecting voter fraud with data, check out Development Seed's [take on the 2014 Afghanistan elections](https://developmentseed.org/blog/2014/07/28/afghanistan-runoff-site/)).
+
+## **Which words are used more frequently by which election observers?**
+Adapting code from Julia Silge and David Robinson's excellent book, [_Text Mining with R_](https://www.tidytextmining.com/twitter.html#word-frequencies-1), we can look at word frequencies in the final reports of EU and OSCE election observers. 
+
+![eu_osce_word_freq.jpeg]({{site.baseurl}}/img/eu_osce_word_freq.jpeg)
+
+There are a few things which stand out for both organizations, like how often the terms they use refer to countries where only they observed elections. For example, since the OSCE's Office for Democratic Institutions and Human Rights (ODIHR) only observes elections in OSCE participating states, you see a lot more European countries (France, Germany, Sweden, etc.) used by the OSCE; for the EU observation missions, we see more non-European countries (Pakistan, Mozambique, Jordan, Venezuela, etc.). We see that the EU references the Universal Declaration of Human Rights (UDHR) more often, whereas the OSCE references "Copenhagen," as in the [OSCE Copehagen Document](http://www.osce.org/odihr/elections/14304?download=true), an agreement by OSCE states on the "rulebook" for democratic elections and human rights. 
+
+## **Tidy sentiment analysis**
+We can again use code from _Text Mining with R_ to help us do sentiment analysis. What is the overall sentiment of EU/OSCE election observation reports? What if we facet by the organization?
+
+![osce_eu_sentiments.jpeg]({{site.baseurl}}/img/osce_eu_sentiments.jpeg)
+
+![osce_eu_sentiment_facet.jpeg]({{site.baseurl}}/img/osce_eu_sentiment_facet.jpeg)
+
+The overall sentiment of election observation reports is on the positive side. When we facet by the organization, we see that OSCE reports are usually more positive than EU reports. Finally, we can also facet by the type of election. (I should note here that I had some difficulties with classification; a good number of election reports covered multiple elections like paralimentary and presidential, which I grouped into 'Other'). 
+
+![eu_osce_sentiment_facet_type.jpeg]({{site.baseurl}}/img/eu_osce_sentiment_facet_type.jpeg)
+
+
+Faceting by all types of elections is a little messy, so let's filter and look at the sentiment fo reports for only general, parliamentary, and presidental elections.
+
+![eu_osce_type_facets.jpeg]({{site.baseurl}}/img/eu_osce_type_facets.jpeg)
+
+### **What were the election reports with the most negative sentiment?**
+We can also look at the elections where election reports were the most negative and the type of election.
+
+![most_negative_elections.jpeg]({{site.baseurl}}/img/most_negative_elections.jpeg)
+
+We see that parliamentary elections make up the bulk of reports that are the most negative. If we take a closer look at the elections in question, we also see that they were usually marked by military or ethnic violence, voting irregularities, ballot stuffing, bias by state media, and more. 
+
+#**Conclusion**
+In a future post, I'd like to take a look at how the reports of non-governemntal organizations compare to those by the EU and OSCE/ODIHR. Are non-governmental organizations' reports likely to be more negative in sentiment, and would the words they use reflect this? How  
+
+
+
+_Photo: "EU Election Observation Mission in Tunisia," Ezequiel Scagnetti © European Union, (CC BY-NC-ND 2.0)._
+
 
