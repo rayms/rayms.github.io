@@ -1,16 +1,11 @@
 ---
 layout: page
 title: About me
-subtitle: Why you'd want to go on a date with me
+subtitle: 
 ---
 
-My name is Inigo Montoya. I have the following qualities:
+My name is Ray and I'm a Senior Programe Officer and Governance and Innovation Expert at [Democracy Reporting International](http://www.democracy-reporting.org), where manage an EU-funded project in Myanmar and work on technology, elections, and democracy. 
 
-- I rock a great mustache
-- I'm extremely loyal to my family
+I started this blog because of my interest in data science and to document my progress with learning the R programming language. 
 
-What else do you need?
-
-### my history
-
-To be honest, I'm having some trouble remembering right now, so why don't you just watch [my movie](http://en.wikipedia.org/wiki/The_Princess_Bride_%28film%29) and it will answer **all** your questions.
+I double majored in Political Studies and Creative Writing at Pitzer College ('12) in Claremont, California. Before that, I was in the US Armed Forces for six years, where I worked as a communications specialist. 
