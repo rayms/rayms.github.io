@@ -16,11 +16,10 @@ Can we use text mining to tell us more about how election observers write about 
 
 
 
-#**Getting the data**
-
+## **Getting the data**
 To start, I went to the OSCE website and used their internal search engine to search for the reports I needed. The first page of search results gave me only 50 reports and I scraped all of those links (and the following two pages by repeating the code - not very efficient, I know). 
 
-~~~
+````r
 library(rvest)
 library(stringr)
 library(lubridate)
@@ -43,11 +42,11 @@ links_df <- do.call(rbind, lapply(links, data.frame, stringsAsFactors=FALSE))
 
 #rename the first column
 names(links_df) <- "url"
-~~~
+````
 
 At this point, I noticed that in getting the links to the PDF reports, I also grabbed a lot of extra links that I didn't need. In the next step, I had to filter out all of that junk.
 
-~~~
+````R
 #create a new column that has a logical value depending on whether or not the URL is to a downloadable report
 links_df$report <- grepl('download=true', links_df$url, ignore.case=TRUE)
 
@@ -57,7 +56,7 @@ links_df_subset <- links_df[links_df$report==TRUE, ]
 #create full links
 links_full <- paste("http://www.osce.org", links_df_subset$url, sep = "")
 
-~~~
+````
 
 I was nearly ready to begin scraping the PDFs, but I checked first what the OSCE site says about scraping by using: 
 
@@ -215,5 +214,3 @@ In a future post, I'd like to take a look at how the reports of non-governemntal
 
 
 _Photo: "EU Election Observation Mission in Tunisia," Ezequiel Scagnetti © European Union, (CC BY-NC-ND 2.0)._
-
-
