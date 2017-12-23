@@ -4,7 +4,7 @@ title: About me
 subtitle: 
 ---
 
-My name is Ray and I'm a Senior Programe Officer and Governance and Innovation Expert at [Democracy Reporting International](http://www.democracy-reporting.org), where manage an EU-funded project in Myanmar and work on technology, elections, and democracy. 
+My name is Ray and I'm a Senior Programe Officer and Governance and Innovation Expert at [Democracy Reporting International](http://www.democracy-reporting.org), where I manage an EU-funded project in Myanmar. Previously, I've worked on electoral and constitutional projects in Tunisia, Pakistan, and Sri Lanka.  
 
 I started this blog because of my interest in data science and to document my progress with learning the R programming language. 
 
