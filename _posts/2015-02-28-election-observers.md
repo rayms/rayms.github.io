@@ -17,7 +17,7 @@ Can we use text mining to tell us more about how election observers write about 
 
 
 ## **Getting the data**
-To start, I went to the OSCE website and used their internal search engine to find the reports I needed. The first page of results gave me only 50 reports and I scraped all of those links (and the following two pages by repeating the code - not very efficient, I know). 
+To start, I went to the OSCE website and used their internal search engine to find the election observation reports of the Office for Democratic Institutions and Human Rights (ODIHR), which is the arm of the OSCE that observes elections. The first page of results gave me only 50 reports and I scraped all of those links (and the following two pages by repeating the code - not very efficient, I know). 
 
 ````r
 library(rvest)
@@ -129,25 +129,26 @@ I finally had a dataframe as a "one-row-per-term document" for tidy analysis.
 # ... with 1,171,517 more rows
 ````
 
-In the interest of time - and to get to the analysis - I'm going to skip the code that I used to get the data for EU Election Observation Missions. Basically, I scraped the data from the [Election Observation and Democracy Support (EODS) website](http://www.eods.eu/eom-reports/), and ended up with 76 reports after excluding non-English language reports. In total, I now had **217 eelction observation reports** ranging from 1997-2017 (but really, it was just one report in 1997, and most reports began from 2002) for elections in **89 different countries**. Great! When I combined the OSCE and EU dataframes, I had a pretty large dataframe with 2,240,218 observations.
+In the interest of time - and to get to the analysis - I'm going to skip the code that I used to get the data for EU Election Observation Missions and two non-governmental organizations, the National Democratic Institute (NDI) and the International Republican Institute (IRI). In the end, I retreived 76 EU election observation reports, 34 IRI reports, and 17 NDI reports. In total, I now had **268 election observation reports** for elections in **100 different countries** between 1997-2017. Great! I also now had a pretty large dataframe with 3,056,4480 observations.
 
-Let's see which words are used the most often in election observation reports. After removing stop words and other words uninteresting words like "eu", "osce", "odihr, "eom", "elections," etc., we have the following bar chart.  
+Let's see which words are used the most often in election observation reports. After removing stop words and other words like organizations ("eu", "osce", "odihr," "eom", "iri", and "ndi") as well as less interesting ones("elections," "electoral", etc.) we have the following bar chart.  
 
-![eu_osce_common_words.jpeg]({{site.baseurl}}/img/eu_osce_common_words.jpeg)
+![common_words_reports.jpeg]({{site.baseurl}}/img/common_words_reports.jpeg)
 
 This is interesting because some of the most common words allude to specific issues related to elections, like political parties, candidates and campaigning; polling and the release of results; and voting and election day. 
 
 We can also facet by the organization type and see which words were the most common for each organization.
 
-![osce_eu_facet_words.jpeg]({{site.baseurl}}/img/osce_eu_facet_words.jpeg)
+![common_words_org.jpeg]({{site.baseurl}}/img/common_words_org.jpeg)
 
-We can see slight differences in the most common words, but not much. Words like "parliamentary," "complaints," and "legal" are among the most common for the OSCE reports, whereas the EU reports contain "presidential," (polling) "stations," and (voter) "registration." 
+We can see slight differences in the most common words, but not very much. The OSCE words are perhaps the most distinctive, with terms like "parliamentary," "complaints," and "legal." "Polling," "political" and "parties" are the most frequent in some combination for all reports, with some organizations having distinctive words like the EU's (voter) "registration" and IRI's "ballots."
 
 
 ## **Which human rights treaties do election observers reference?** 
-Election observers  use international law as a standard to measure the quality of elections. This means assessing different elements of an election against the international treaties and obligations that a country has ratified. The most relevant international treaty for elections is called the International Covenant on Civil and Political Rights (ICCPR). Can we look at the election observer reports to see which treaties they reference the most? 
+Election observers  use international law as a standard to measure the quality of elections. This means assessing different elements of an election against the international obligations that a country has committed to fulfill, particularly by treaty ratification. The most relevant international treaty for elections is called the International Covenant on Civil and Political Rights (ICCPR), which 169 countries have ratified. The ICCPR covers basic rights like the right to stand for elections, the right to secret and universal voting, and freedom of association, among other rights. Can we look at the election observer reports to see which treaties they mention the most in their reports?  
 
-![eu_osce_ref_conventions.jpeg]({{site.baseurl}}/img/eu_osce_ref_conventions.jpeg)
+![conventions.jpeg]({{site.baseurl}}/img/conventions.jpeg)
+
 
 Unsurprisingly, the ICCPR is the most referenced treaty. Next is the Convention on the Elimination of All Forms of Discrimination Against Women (CEDAW), the Universal Declaration of Human Rights (UDHR), and the Convention on the Rights of the Child (CRC). I have to admit that the last one surprised me.  
 
@@ -159,24 +160,24 @@ Election observers are generally cautious about leveling allegations of electora
 There are relatively few references to fraud in almost two decades worth of reports. But there were two years where mentions of fraud were quite high, in 2009 and 2014. What elections might have contributed to this?
 
 ````r
-# A tibble: 117 x 3
-# Groups:   year [15]
-         year       country  word
-       <date>         <chr> <int>
- 1 2009-01-01   Afghanistan   116
- 2 2014-01-01   Afghanistan   104
- 3 2007-01-01       Nigeria    46
- 4 2005-01-01   Afghanistan    30
- 5 2003-01-01       Nigeria    18
- 6 2008-01-01 United States    13
- 7 2009-01-01    Mozambique    12
- 8 2010-01-01       Britain    11
- 9 2010-01-01     Nicaragua    11
-10 2006-01-01     Nicaragua    10
-# ... with 107 more rows
+# A tibble: 153 x 3
+# Groups:   year [19]
+         year     country  word
+       <date>       <chr> <int>
+ 1 2010-01-01 Afghanistan   264
+ 2 2009-01-01 Afghanistan   184
+ 3 2014-01-01 Afghanistan   114
+ 4 2007-01-01     Nigeria    71
+ 5 2003-01-01     Nigeria    60
+ 6 2004-01-01  Philippine    56
+ 7 2005-01-01     Liberia    41
+ 8 1999-01-01     Ukraine    39
+ 9 2005-01-01 Afghanistan    39
+10 2008-01-01  Bangladesh    39
+# ... with 143 more rows
 ````
 
-Both the 2009 and 2014 presidential elections in Afghanistan were marred by ballot stuffing and other forms of fraud (for great analysis of detecting voter fraud with data, check out Development Seed's [take on the 2014 Afghanistan elections](https://developmentseed.org/blog/2014/07/28/afghanistan-runoff-site/)).
+Both the 2009 and 2014 presidential elections in Afghanistan were marred by ballot stuffing and other forms of fraud (for a great analysis of detecting voter fraud with data, check out Development Seed's [take on the 2014 Afghanistan elections](https://developmentseed.org/blog/2014/07/28/afghanistan-runoff-site/)).
 
 ## **Which words are used more frequently by which election observers?**
 Adapting code from Julia Silge and David Robinson's excellent book, [_Text Mining with R_](https://www.tidytextmining.com/twitter.html#word-frequencies-1), we can look at word frequencies in the final reports of EU and OSCE election observers. 
