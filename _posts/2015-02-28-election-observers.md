@@ -2,7 +2,7 @@
 layout: post
 title: How do election observers write about elections? A tidytext analysis
 published: true
-date: '2017-12-22'
+date: '2018-01-04'
 ---
 ![EU Election Observers in Tunisia]({{site.baseurl}}/img/observers.jpg)
 
@@ -149,15 +149,19 @@ Election observers  use international law as a standard to measure the quality o
 
 ![conventions.jpeg]({{site.baseurl}}/img/conventions.jpeg)
 
+Unsurprisingly, the ICCPR is the most referenced treaty. Next is the Convention on the Elimination of All Forms of Discrimination Against Women (CEDAW), the Universal Declaration of Human Rights (UDHR), and the Convention on the Rights of the Child (CRC). I have to admit that the last one surprised me. 
 
-Unsurprisingly, the ICCPR is the most referenced treaty. Next is the Convention on the Elimination of All Forms of Discrimination Against Women (CEDAW), the Universal Declaration of Human Rights (UDHR), and the Convention on the Rights of the Child (CRC). I have to admit that the last one surprised me.  
+We can also facet by organization to see which ones mention these treaties the most. 
+
+![conventions_by_org.jpeg]({{site.baseurl}}/img/conventions_by_org.jpeg)
+
 
 ## **How often do election observers use the word "fraud"?**
 Election observers are generally cautious about leveling allegations of electoral fraud, so how often do they use the term in their reports? 
 
 ![fraud_mentions.jpeg]({{site.baseurl}}/img/fraud_mentions.jpeg)
 
-There are relatively few references to fraud in almost two decades worth of reports. But there were two years where mentions of fraud were quite high, in 2009 and 2014. What elections might have contributed to this?
+There are relatively few references to fraud in almost two decades worth of reports. But there were two years where mentions of fraud were quite high, in 2009, 2010, and 2014. What elections might have contributed to this?
 
 ````r
 # A tibble: 153 x 3
@@ -177,7 +181,7 @@ There are relatively few references to fraud in almost two decades worth of repo
 # ... with 143 more rows
 ````
 
-Both the 2009 and 2014 presidential elections in Afghanistan were marred by ballot stuffing and other forms of fraud (for a great analysis of detecting voter fraud with data, check out Development Seed's [take on the 2014 Afghanistan elections](https://developmentseed.org/blog/2014/07/28/afghanistan-runoff-site/)).
+The  2009, 2010, and 2014 elections in Afghanistan were marred by ballot stuffing and other forms of fraud (this is an aside, but for a great analysis of detecting voter fraud with data, check out Development Seed's [take on the 2014 Afghanistan elections](https://developmentseed.org/blog/2014/07/28/afghanistan-runoff-site/)).
 
 ## **Which words are used more frequently by which election observers?**
 Adapting code from Julia Silge and David Robinson's excellent book, [_Text Mining with R_](https://www.tidytextmining.com/twitter.html#word-frequencies-1), we can look at word frequencies in the final reports of EU and OSCE election observers. 
@@ -187,31 +191,53 @@ Adapting code from Julia Silge and David Robinson's excellent book, [_Text Minin
 There are a few things which stand out. First, the most frequent words used by each organization often refer to countries where only they observe elections. For example, since the OSCE's Office for Democratic Institutions and Human Rights (ODIHR) only observes elections in OSCE participating states, we see a lot more European countries (France, Germany, Sweden, Netherlands etc.) used by the OSCE; for the EU observation missions, we see more non-European countries (Pakistan, Mozambique, Jordan, Venezuela, etc.). We see that the EU references the Universal Declaration of Human Rights (UDHR) more frequently, whereas the OSCE references "Copenhagen," as in the [OSCE Copehagen Document](http://www.osce.org/odihr/elections/14304?download=true), an agreement made by OSCE states on the "rulebook" for democratic elections and human rights. 
 
 ## **Tidy sentiment analysis**
-We can again use code from _Text Mining with R_ to help us do sentiment analysis. What is the overall sentiment of EU/OSCE election observation reports? What if we facet by the organization?
+We can again use code from _Text Mining with R_ to help us do sentiment analysis. What is the overall sentiment of election observation reports? 
 
-![osce_eu_sentiments.jpeg]({{site.baseurl}}/img/osce_eu_sentiments.jpeg)
+![sentiment_of_reports.jpeg]({{site.baseurl}}/img/sentiment_of_reports.jpeg)
 
-![osce_eu_sentiment_facet.jpeg]({{site.baseurl}}/img/osce_eu_sentiment_facet.jpeg)
 
-The overall sentiment of election observation reports is on the positive side. When we facet by the organization, we see that OSCE reports are usually more positive than EU reports. Finally, we can also facet by the type of election. (I should note here that I had some difficulties with classification; a good number of election reports covered multiple elections like paralimentary and presidential, which I grouped into 'Other'). 
+The overall sentiment of election observation reports is on the positive side. We see a sharp decline in sentiment only in 2002 - let's see which elections were observed that year: 
 
-![eu_osce_sentiment_facet_type.jpeg]({{site.baseurl}}/img/eu_osce_sentiment_facet_type.jpeg)
+````r
+# A tibble: 237 x 4
+# Groups:   year [18]
+         year   country average_sentiment words
+       <date>     <chr>             <dbl> <int>
+ 1 2000-01-01     China        0.54426230   610
+ 2 2000-01-01   Croatia        0.19282511   446
+ 3 2000-01-01    Mexico        0.40631579   950
+ 4 2001-01-01     China        0.51297405   501
+ 5 2001-01-01 Nicaragua        0.31096774   775
+ 6 2002-01-01   Bahrain        0.21126761   426
+ 7 2002-01-01   Ecuador        0.03846154   260
+ 8 2002-01-01 Macedonia       -0.22071636  1033
+ 9 2002-01-01  Pakistan       -0.07545165   941
+10 2003-01-01     China        0.89238845   762
+# ... with 227 more rows
+````
+
+We see that there were elections in Bahrain, Ecuador, Macedonia, and Pakistan in 2002, with negative sentiment scores for both Pakistsan and Macedonia, which brought the overall average score down for that year. The 2002 elections in Pakistan were the first multi-party contest, held under close military scrutiny, and the elections in Macedonia were marked by instances of violence and threats and attacks on media (despite these shortcomings, the OSCE concluded that the Macedonian elections met its standards).
+
+When anazlying sentiment, we can also facet by the type of election. (I should note here that I had some difficulties with classification; a good number of election reports covered multiple elections like paralimentary and presidential, which I grouped into 'Other'). 
+
+![sentiments_by_type.jpeg]({{site.baseurl}}/img/sentiments_by_type.jpeg)
 
 
 Faceting by all types of elections is a little messy, so let's filter and look at the sentiment fo reports for only general, parliamentary, and presidental elections.
 
-![eu_osce_type_facets.jpeg]({{site.baseurl}}/img/eu_osce_type_facets.jpeg)
+![sentiment_by_genparlpres.jpeg]({{site.baseurl}}/img/sentiment_by_genparlpres.jpeg)
+
 
 ### **What were the election reports with the most negative sentiment?**
 We can also look at the elections where election reports were the most negative and the type of election.
 
-![most_negative_elections.jpeg]({{site.baseurl}}/img/most_negative_elections.jpeg)
+![neg_elections.jpeg]({{site.baseurl}}/img/neg_elections.jpeg)
 
-We see that parliamentary elections make up the bulk of reports that are the most negative. If we take a closer look at the elections in question, we also see that they were usually marked by military or ethnic violence, voting irregularities, ballot stuffing, bias by state media, and more. 
+
+We see that parliamentary elections make up the bulk of reports that are the most negative. If we take a closer look at the elections in question, we also see that they were usually marked by military or ethnic violence (Nigeria '07 and '15, Macedonia '02 and '08), voting irregularities and ballot stuffing ([Aghanistan '10](http://www.nytimes.com/2010/09/25/world/asia/25afghan.html?pagewanted=all) and '05), bias by state media and misuse of state resources (Ukraine '99, Philippines '04, Turkey '17), and more. 
 
 # **Conclusion**
-In a future post, I'd like to take a look at how the reports of non-governemntal organizations compare to those by the EU and OSCE/ODIHR. Are non-governmental organizations' reports likely to be more negative in sentiment, and would the words they use reflect this? How  
-
+Overall, I'm pretty happy with the results of this analysis. I think in the future, I would like to refine the categorization of elections to end up with fewer "Other" types, and to add more election reports by intergovernmental organizations (like The Carter Center). I learned quite a bit during this first project: how to scrape PDFs; read them into a dataframe and use ````tidytext```` to unnest the text; some trickier work with regex on the filenames to create other variables; and quite a bit about how to use ````ggplot```` and faceting. 
 
 
 _Photo: "EU Election Observation Mission in Tunisia," Ezequiel Scagnetti © European Union, (CC BY-NC-ND 2.0)._
