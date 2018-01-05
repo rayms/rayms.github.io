@@ -162,7 +162,7 @@ Election observers are generally cautious about leveling allegations of electora
 
 ![fraud_mentions.jpeg]({{site.baseurl}}/img/fraud_mentions.jpeg)
 
-There are relatively few references to fraud in almost two decades worth of reports. But there were two years where mentions of fraud were quite high, in 2009, 2010, and 2014. What elections might have contributed to this?
+There are relatively few references to fraud in almost two decades worth of reports. But there were three years where mentions of fraud were quite high, in 2009, 2010, and 2014. What elections might have contributed to this?
 
 ````r
 # A tibble: 153 x 3
