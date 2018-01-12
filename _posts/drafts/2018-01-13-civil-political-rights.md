@@ -243,9 +243,12 @@ What exactly is happening with the complaints process that _inadmissible_ decisi
 ## Which countries are often accused of violating civil and political rights?
 ![countries_accused.jpeg]({{site.baseurl}}/img/countries_accused.jpeg)
 
+What we're looking at here is the total number of times the country has been a defendant in a complaint. I find these results quite surprising. Some of the most advanced democracies in the world are in the top ten, alongside countries better known for their authoritarian tendencies. There could be many reasons for these findings though, such as strong advocates of rights who act as third parties and bring individual cases to the HRC; robust institutions like national human rights commissions, which also help to lodge such complaints; and, indeed, the simple fact that some countries here frequenty _do_ violate rights and citizens exhaust all other domestic remedies. 
 
 
 
+## How have the number of complaints progressed over the years?
+![complaints_by_year.jpeg]({{site.baseurl}}/img/complaints_by_year.jpeg)
 
 
 _Photo: "Human Right Council - 32nd Session," UN Photo / Jean-Marc Ferré  (CC BY-NC-ND 2.0)._
