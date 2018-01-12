@@ -168,7 +168,12 @@ $ Date     <dttm> 2017-07-28, 2017-07-28, 2017-07-28, 2017-07-28, 2017-07-28, 20
 $ Country  <chr> "Belarus", "Canada", "Algeria", "Denmark", "Russian Federation", "Denmark", "K...
 ````
 
-I started with a few basic things, such as what the count of rulings are for complaints, and which countries have the most complainants.
+
+<br/>
+
+
+## What are the most frequent rulings by the Human Rights Committee?
+I started my analysis by looking at how the Human Rights Committee has ruled on complaints. 
 
 
 ````r
@@ -192,7 +197,7 @@ decisions %>%
 12                                  Merits - violation, Violations     1
 13                                Partially Admissible, Violations     1
 ````
-This is interesting! There are almost as many _Inadmissible_ cases as there are cases with violations. But there are also a lot of categories that make this a little confusing. To clear things up, I e-mailed the CCPR Centre to ask about their coding of the cases. I won't go into too much detail, but "merits" just means that "all procedural conditions are fulfilled," violations or violations is clear, and "partially admissible" is where "one part of the case is declared inadmissible, which means the merits of that part of the case will not be examined. Other parts of the case, however, are admissible and the Committee will adopt a view for those parts. This is why the term 'partially admissible' is combined with 'violation' or 'no violation'."
+This was interesting! There are almost as many _Inadmissible_ cases as there are cases with violations. But there are also a lot of categories that make this a little confusing. To clear things up, I e-mailed the CCPR Centre to ask about their coding of the cases. I won't go into too much detail, but "merits" just means that "all procedural conditions are fulfilled," violations or violations is clear, and "partially admissible" is where "one part of the case is declared inadmissible, which means the merits of that part of the case will not be examined. Other parts of the case, however, are admissible and the Committee will adopt a view for those parts. This is why the term 'partially admissible' is combined with 'violation' or 'no violation'."
 
 For this analysis, I decided to simplify things and recoded the outcomes into the following groups, _Merits - violations, Merits - no violations, Inadmissible,_ and _Discontinued_.
 
@@ -233,6 +238,12 @@ decisions %>%
 ![complaints_by_outcome.jpeg]({{site.baseurl}}/img/complaints_by_outcome.jpeg)
 
 What exactly is happening with the complaints process that _inadmissible_ decisions are so high? We can't answer this question with the data we have here. But you can [read more](http://www.ohchr.org/EN/HRBodies/TBPetitions/Pages/IndividualCommunications.aspx#theadmissibility) about the admissibility of complaints and the many factors that committees must consider when making this decision. 
+
+
+## Which countries are often accused of violating civil and political rights?
+![countries_accused.jpeg]({{site.baseurl}}/img/countries_accused.jpeg)
+
+
 
 
 
