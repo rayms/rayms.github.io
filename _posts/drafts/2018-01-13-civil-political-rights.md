@@ -8,18 +8,18 @@ subtitle: Analyzing 40 years of treaty complaints
 
 ![27698596140_58e569da23_z.jpg]({{site.baseurl}}/img/27698596140_58e569da23_z.jpg)
 
-In my last blog post, I took a look at how election observers write about elections when reporting their findings. I also mentioned how election observers usually reference international treaties in their reports and assess how  countries fulfill their treaty obligations, for example, by ensuring that all citizens have the right to vote and stand in elections; freedom of association and expression during the campaign; the right to a fair trial and equality before the law; and more. The [International Covenant for Civil and Political Rights](http://www.ohchr.org/en/professionalinterest/pages/ccpr.aspx) (ICCPR) governs all of these rights, and 169 countries have ratified the treaty. 
+In my last blog [post](https://rayms.github.io/2018-01-04-election-observers/), I took a look at how election observers write about elections when reporting their findings. In that post, I also mentioned how election observers usually reference international treaties in their reports and assess how  countries fulfill their treaty obligations, for example, by ensuring that all citizens have the right to vote and stand in elections; freedom of association and expression during the campaign; the right to a fair trial and equality before the law; and more. The [International Covenant for Civil and Political Rights](http://www.ohchr.org/en/professionalinterest/pages/ccpr.aspx) (ICCPR) governs all of these rights, and 169 countries have ratified the treaty. 
 
 Interestingly, the ICCPR also has what is called an "Optional Protcol" (you can read more about what an Optional Protocol is [here](http://www.un.org/womenwatch/daw/cedaw/protocol/whatis.htm). The ICCPR's [Optional Protocol](http://www.ohchr.org/EN/ProfessionalInterest/Pages/OPCCPR1.aspx) is itself a treaty, and countries can opt to ratify it, thereby allowing individuals to complain to the treaty's expert body - [the Human Rights Committee](http://www.ohchr.org/EN/HRBodies/CCPR/Pages/CCPRIndex.aspx) (HRC) - if they believe their rights have been violated by the state in question. Eight other treaties have a similar ["complaint mechanism"](http://www.ohchr.org/EN/HRBodies/TBPetitions/Pages/HRTBPetitions.aspx), which is usually monitored by the respective treaty body.  
 
-But how often are complaints made to these expert treaty bodies? What kind of rights are being violated, and which countries are the main offenders? And how do these bodies rule on the cases brought before them? To explore these questions, I started with the ICCPR, since it's the treaty I am most familiar with in my field of work (elections), and I was interested to see if the rights that election observers often tout are also reflected in cases brought to the HRC.  
+But how often are complaints made to these expert treaty bodies? What kind of rights are being violated, and which countries are the main offenders? And how do these bodies rule on the cases brought before them? To explore these questions, I started with the ICCPR, since it's the treaty I am most familiar with given my field of work (elections), and I was interested to see if the rights that election observers often tout are also reflected in cases brought to the HRC. 
 
+It's also important to note that the countries in this analysis are **only those that have ratified the ICCPR's Optional Protocol**. Of the 169 countries that have ratified the ICCPR, 78 have not ratified the Optional Protocol. This includes countries like the United States, Egypt, Switzerland, the United Kingdom, Ethiopia, China, and others (you find find a full list [here](http://indicators.ohchr.org)).
 
 # **Getting the data**
-Luckily, the [Centre for Civil and Political Rights](http://ccprcentre.org), an NGO based in Geneva, has an excellent [database](http://ccprcentre.org/database-decisions/) of case-law and briefs for complaints against countries party to the ICCPR's Optional Protcol. This database contains has table that has the title of the case (e.g., "Christopher Alger v. Australia 
-CCPR/C/120/D/2237/2013"), relevant articles of the treaty (eg., "Articles 17, 18"), keywords associated with the case (e.g. "Fair trial," "Privacy," etc.), the date, and the treaty body's ruling, or outcome of the case ("Merits - violation," "Merits - no violation", etc). 
+Luckily, the [Centre for Civil and Political Rights](http://ccprcentre.org), an non-governmental oganisation based in Geneva, has an excellent [database](http://ccprcentre.org/database-decisions/) of case-law and briefs for complaints against countries party to the ICCPR's Optional Protcol. This database has a table that has the title of the compalint, relevant articles of the treaty, keywords associated with the complaint, the date of the complaint, and the treaty body's ruling, or outcome of the case. 
 
-On the database page, I identified the table with all the information I needed and used ````rvest```` to get scraping. (I adapted this code from [Maëlle Salmon's](https://twitter.com/ma_salmon) super [post](http://www.masalmon.eu/2017/10/02/guardian-experience/) about scraping the Guardian, which is a great read!). 
+On the database page, I identified the table with all the information I needed and used ````rvest```` to get scraping. (I adapted the code to scrape from [Maëlle Salmon's](https://twitter.com/ma_salmon) super [post](http://www.masalmon.eu/2017/10/02/guardian-experience/) about scraping the Guardian, which is a great read!). 
 
 ````r
 library(rvest)
@@ -73,7 +73,7 @@ I knew that I wanted to add a Country column, and to do so I would need to extra
 [6] "S. Z. v. Denmark                      \r\n                    CCPR/C/120/D/2625/2015"    
 ````
 
-Countries were always found after the "v." and before the carriage return (\r) and new line (\n). I had planned to use ````stringr```` to extract all of the country names based on a pattern, but unfortunately, my knowledge of regex wasn't quite up to stuff. After several hours of trying and nearly succeeding and then poring through Stack Overflow, I finally submitted a question, and someone helped me out. I love Stack Overflow. 
+Countries were always found after the "v." and before the carriage return (\r) and new line (\n). I had planned to use ````stringr```` to extract all of the country names based on a pattern, but unfortunately, my knowledge of regular expressions wasn't quite up to stuff. After several hours of trying and nearly succeeding and then poring through Stack Overflow, I finally submitted a question, and someone helped me out. I love Stack Overflow. 
 
 
 ````
@@ -81,7 +81,7 @@ Countries were always found after the "v." and before the carriage return (\r) a
 decisions$Country <- trimws(str_match(decisions$Title, "\\bv(?:s?\\.|:)?\\s*(.*)")[,2])
 ````
 
-Unfortunately, when I used this regex, it still didn't catch all of the countries. First, there were a number of countries that also had "(xxth session)" in the title. I had to identify and replace all of these. In other cases, I managed to extract the country name, as well as other text ("van der Hoot v. the Netherlands"), so I had to identify these rows and manually change them. There were also other quirks that weren't caught by the regular expresssion. All of it was a long, iterative process, and in the end, I still had to identify all of the unique problems and simply recode the values. This is how it went: 
+Unfortunately, when I used this regular expression, it still didn't catch all of the countries. First, there were a number of countries that also had "(xxth session)" in the title. I had to identify and replace all of these. In other cases, I managed to extract the country name, as well as other text ("van der Hoot v. the Netherlands"), so I had to identify these rows and manually change them. There were also other quirks that weren't caught by the regular expresssion. All of it was a long, iterative process, and in the end, I still had to identify all of the unique problems and simply recode the values. This is how it went: 
 
 ````r
 #fix all countries where the (xxth session) bit was also added
@@ -171,8 +171,6 @@ $ Outcome  <chr> "Merits - violation", "Inadmissible", "Merits - violation", "Me
 $ Date     <dttm> 2017-07-28, 2017-07-28, 2017-07-28, 2017-07-28, 2017-07-28, 2017-07-28, 2017-...
 $ Country  <chr> "Belarus", "Canada", "Algeria", "Denmark", "Russian Federation", "Denmark", "K...
 ````
-
-
 <br/>
 
 
@@ -201,9 +199,9 @@ decisions %>%
 12                                  Merits - violation, Violations     1
 13                                Partially Admissible, Violations     1
 ````
-There are a lot of categories that make this a little confusing. To clear things up, I e-mailed the CCPR Centre to ask about their coding of the cases. I won't go into too much detail, but "merits" just means that "all procedural conditions are fulfilled," violations or violations is clear, and "partially admissible" is where "one part of the case is declared inadmissible, which means the merits of that part of the case will not be examined. Other parts of the case, however, are admissible and the Committee will adopt a view for those parts. This is why the term 'partially admissible' is combined with 'violation' or 'no violation'."
+There are a lot of categories that make this a little confusing. To clear things up, I e-mailed the CCPR Centre to ask about their coding of the cases. I won't go into too much detail, but "merits" just means that "all procedural conditions are fulfilled," and "partially admissible" is where "one part of the case is declared inadmissible, which means the merits of that part of the case will not be examined. Other parts of the case, however, are admissible and the Committee will adopt a view for those parts. This is why the term 'partially admissible' is combined with 'violation' or 'no violation'."
 
-For this analysis, I decided to simplify things and recoded the outcomes into the following groups, _Merits - violations, Merits - no violations, Inadmissible,_ and _Discontinued_.
+For this analysis, I decided to simplify and recoded the outcomes into the following groups: _Merits - violations, Merits - no violations, Inadmissible,_ and _Discontinued_.
 
 ````r
 decisions$Outcome <- decisions$Outcome %>%
@@ -243,7 +241,6 @@ decisions %>%
 
 What exactly is happening with the complaints process that _inadmissible_ decisions are so high? We can't answer this question with the data we have here. But you can [read more](http://www.ohchr.org/EN/HRBodies/TBPetitions/Pages/IndividualCommunications.aspx#theadmissibility) about the admissibility of complaints and the many factors that committees must consider when making this decision. It seems extremely complex. 
 
-
 <br/>
 
 ## Which countries are often accused of violating civil and political rights?
@@ -258,7 +255,6 @@ But these are just countries accused of violations. What about countries where t
 This chart is a little different. Jamaica is still the top offender, but there are now other countries in the chart like the Czech Republic and Algeria. And although the Netherlands and Denmark had been among the most accused countries, they are not top among those with violations.  
 
 <br/>
-
 
 ## What kind of violations are countries committing? 
 Each case has been coded with "Keywords" that can tell us what rights the country may have violated. The column looks like this: 
@@ -301,7 +297,7 @@ decisions %>%
 
 ![violations_by_keyword.jpeg]({{site.baseurl}}/img/violations_by_keyword.jpeg)
 
-We find that, at least according to the HRC's rulings, countires are violationg the prohibition on torture more than any other violation. It's interesting that, although the ICCPR is regarded by election observers as **the** international treaty governing election rights, the complaints mechanism seems to be used for more serious violations. 
+We find that, at least according to the HRC's rulings, countries are violationg the prohibition on torture more than any other violation. It's interesting that, though the ICCPR is regarded by election observers as **the** international treaty governing election rights, the complaints mechanism seems to be used for more serious violations. 
 
 Below, I've grouped different rights and assigned them to "elections," then filtered the keywords on that basis to see how many cases might be related: 
 
@@ -342,7 +338,7 @@ decisions %>%
   
 # A tibble: 51 x 4
 # Groups:   sep_keywords, Outcome [1]
-              sep_keywords            Outcome            Country keyword_violations
+             sep_keywords            Outcome            Country keyword_violations
                      <chr>              <chr>              <chr>              <int>
  1 Torture / ill-treatment merits - violation            Jamaica                 54
  2 Torture / ill-treatment merits - violation            Algeria                 29
@@ -365,7 +361,7 @@ We can also look at how the number of complaints has fluctuated over the last 40
 ![complaints_by_year.jpeg]({{site.baseurl}}/img/complaints_by_year.jpeg)
 
 
-Overall, we see a pretty steady increase. Next, we can filter to see the trend for cases resulting in violations, no violations, or inadmissible. 
+Overall, we see a steady increase. Next, we can filter to see the trend for cases resulting in violations, no violations, or inadmissible. 
 
 ````r
 decisions %>%
@@ -384,7 +380,7 @@ decisions %>%
   ````
   ![complaints_timeseries_outcome.jpeg]({{site.baseurl}}/img/complaints_timeseries_outcome.jpeg)
 
-By around 2007, the number of cases ruled as inadmissible seems to have declined, while cases ruled as violations increased. 
+By around 2007, the number of cases ruled as inadmissible seems to have declined, whereas cases ruled as violations increased. 
 
 We can also look at a time-series over the years by grouping all countries together. We get a pretty messy plot with multiple time-series.
 
@@ -423,9 +419,9 @@ And a few other countries which peak at around 20 complaints throughout differen
 
 
 # **Conclusion**
-I learned A TON for this project. I was surprised at how easy it is to scrape data from html tables thanks to ```rvest``` and how to use ```purrr```, but I think I need a lot more practice with the latter to fully understand what's going on. Dealing with the regular expressions to get the country names into another column really, really drove me mad, and I wanted to give up at some points. But in the end it worked out. 
+I learned a lot during this project. I was surprised at how easy it is to scrape data from tables thanks to ```rvest``` and how to use ```purrr```, but I think I need a lot more practice with the latter to fully understand what's going on. Dealing with the regular expressions to get the country names into another column really drove me mad and I wanted to give up at some points. But in the end it worked out. 
 
-The data on complaints made to the Human Rights Committee is quite interesting, and I think some of these findings warrant more research. Why does there appear to be an inverse relationship between _inadmissible_ and _violation_ rulings starting in 2007? What explanins some of the peaks and declines in cases against certain countries? Is there a relationship between certain rulings and countries before the HRC? The HRC itself is made up of 14 members who serve for terms of four years. Could the membership of the HRC influence the rulings on cases?
+The data on complaints is quite interesting, and I think some of these findings warrant more research. Why does there appear to be an inverse relationship between _inadmissible_ and _violation_ rulings starting in 2007? What explanins some of the peaks and declines in cases against certain countries? Is there a relationship between certain rulings and countries before the HRC? The HRC itself is made up of 14 members who serve for terms of four years. Could the membership of the HRC influence the rulings on cases?
 
 
 _Photo: "Human Right Council - 32nd Session," UN Photo / Jean-Marc Ferré  (CC BY-NC-ND 2.0)._
