@@ -198,7 +198,7 @@ decisions %>%
 12                                  Merits - violation, Violations     1
 13                                Partially Admissible, Violations     1
 ````
-This was interesting! There are almost as many _Inadmissible_ cases as there are cases with violations. But there are also a lot of categories that make this a little confusing. To clear things up, I e-mailed the CCPR Centre to ask about their coding of the cases. I won't go into too much detail, but "merits" just means that "all procedural conditions are fulfilled," violations or violations is clear, and "partially admissible" is where "one part of the case is declared inadmissible, which means the merits of that part of the case will not be examined. Other parts of the case, however, are admissible and the Committee will adopt a view for those parts. This is why the term 'partially admissible' is combined with 'violation' or 'no violation'."
+There are a lot of categories that make this a little confusing. To clear things up, I e-mailed the CCPR Centre to ask about their coding of the cases. I won't go into too much detail, but "merits" just means that "all procedural conditions are fulfilled," violations or violations is clear, and "partially admissible" is where "one part of the case is declared inadmissible, which means the merits of that part of the case will not be examined. Other parts of the case, however, are admissible and the Committee will adopt a view for those parts. This is why the term 'partially admissible' is combined with 'violation' or 'no violation'."
 
 For this analysis, I decided to simplify things and recoded the outcomes into the following groups, _Merits - violations, Merits - no violations, Inadmissible,_ and _Discontinued_.
 
@@ -238,7 +238,7 @@ decisions %>%
 ````
 ![complaints_by_outcome.jpeg]({{site.baseurl}}/img/complaints_by_outcome.jpeg)
 
-What exactly is happening with the complaints process that _inadmissible_ decisions are so high? We can't answer this question with the data we have here. But you can [read more](http://www.ohchr.org/EN/HRBodies/TBPetitions/Pages/IndividualCommunications.aspx#theadmissibility) about the admissibility of complaints and the many factors that committees must consider when making this decision. 
+What exactly is happening with the complaints process that _inadmissible_ decisions are so high? We can't answer this question with the data we have here. But you can [read more](http://www.ohchr.org/EN/HRBodies/TBPetitions/Pages/IndividualCommunications.aspx#theadmissibility) about the admissibility of complaints and the many factors that committees must consider when making this decision. It seems extremely complex. 
 
 
 ## Which countries are often accused of violating civil and political rights?
@@ -246,7 +246,7 @@ What exactly is happening with the complaints process that _inadmissible_ decisi
 
 I find these results quite surprising. Some of the most advanced democracies in the world are in the top ten, alongside countries better known for their authoritarian tendencies. There could be many reasons for these findings though, such as human rights activists who act as third parties and bring cases to the HRC; robust institutions like national human rights commissions, which also help to lodge such complaints; or the simple fact that some countries frequenty _do_ violate civil and political rights. 
 
-But these are just countries accused of violations. What about countries where the HRC ruled they had indeed violated rights? We can filter by the outcome of the case and group the countries and outcomes together to see which countries have the most complaints ruled as violations. 
+But these are just countries accused of violations. What about countries where the HRC ruled they had indeed violated someone's rights? We can filter down to cases where the outcome was a violation, and group the countries and outcomes together. 
 
 ```r
 decisions %>%
@@ -266,13 +266,149 @@ decisions %>%
         caption = "Source: Centre for Civil and Political Rights Database") +
   coord_flip() 
   ````
-  ![top_violators.jpeg]({{site.baseurl}}/img/top_violators.jpeg)
+![top_violations_countries.jpeg]({{site.baseurl}}/img/top_violations_countries.jpeg)
 
-This chart is a little different. Jamaica is still the top offender, but there are now other countries in the chart like the Czech Republic and Algeria. And although the Netherlands and Denmark had been among the most accused countries, they are not among those with with confirmed violations.  
+This chart is a little different. Jamaica is still the top offender, but there are now other countries in the chart like the Czech Republic and Algeria. And although the Netherlands and Denmark had been among the most accused countries, they are not top among those with violations.  
+
+
+## What kind of violations are countries committing? 
+Each case has been coded with "Keywords" that can tell us what rights the country may have violated. The column looks like this: 
+
+````r
+[1] "Freedom of assembly,Freedom of expression"
+[2] "Arbitrary arrest,Fair trial,Freedom of expression,Freedom of thought, conscience and religion,Interference with one's home,Right to family"        
+[3] "Liberty and security of person,Recognition as a person before the law,Respect for the inherent dignity of the human person,Torture / ill-treatment"
+[4] "Torture / ill-treatment"     
+[5] "Fair trial,Torture / ill-treatment"          
+[6] "Equality before the law,Fair trial,Torture / ill-treatment"        
+````
+Each row has a series of strings - keywords or phrases - that we can split apart, and then group together with the outcome of cases to find violations. 
+
+````r
+#keywords by cases with confirmed merits and/or violations
+decisions %>%
+  mutate(sep_keywords = strsplit(as.character(Keywords), ",")) %>%
+  unnest(sep_keywords) %>%
+  filter(Outcome == "merits - violation") %>%
+  group_by(sep_keywords, Outcome) %>%
+  summarise(keyword_violations = n()) %>%
+  arrange(desc(keyword_violations)) 
+  
+  # A tibble: 90 x 3
+# Groups:   sep_keywords [90]
+                                           sep_keywords            Outcome keyword_violations
+                                                  <chr>              <chr>              <int>
+ 1                              Torture / ill-treatment merits - violation                360
+ 2                              Conditions of detention merits - violation                146
+ 3                                        Right to life merits - violation                142
+ 4                                         Fair hearing merits - violation                138
+ 5                                     Effective remedy merits - violation                125
+ 6                                           Fair trial merits - violation                123
+ 7                              Equality before the law merits - violation                 86
+ 8 Respect for the inherent dignity of the human person merits - violation                 82
+ 9                                Freedom of expression merits - violation                 69
+10                         Expeditiousness of the trial merits - violation                 66
+
+#plot these results
+decisions %>%
+  mutate(sep_keywords = strsplit(as.character(Keywords), ",")) %>%
+  unnest(sep_keywords) %>%
+  filter(Outcome == "merits - violation") %>%
+  group_by(sep_keywords, Outcome) %>%
+  summarise(keyword_violations = n()) %>%
+  arrange(desc(keyword_violations)) %>%
+  head(10) %>%
+  ggplot(aes(x = reorder(sep_keywords, keyword_violations), keyword_violations, fill = sep_keywords)) + 
+  geom_bar(stat = "identity", show.legend = FALSE) + 
+  scale_fill_brewer(palette = "Paired") +
+  theme_ipsum_rc(plot_title_size = 15, subtitle_size = 11) +
+  labs(x = NULL, 
+       y = "Number of occurences",
+       title = "Torture is the leading violation of civil and political rights",
+       subtitle = "Keywords for complaints lodged against state parties, 1976-2017") +
+  coord_flip()
+````
+
+![violations_by_keyword.jpeg]({{site.baseurl}}/img/violations_by_keyword.jpeg)
+
+We find that, at least according to the HRC's rulings, countires are committing torture the most when violating rights. It's interesting that, although the ICCPR is regarded by election observers as **the** international treaty governing election-related rights, the complaints mechanism seems to be used for more serious violations. 
+
+Below, I've grouped different rights and assigned them to "elections," then filtered the keywords on that basis to see how many cases might be related: 
+
+````r
+decisions %>%
+  mutate(sep_keywords = strsplit(as.character(Keywords), ",")) %>%
+  unnest(sep_keywords) %>%
+  filter(sep_keywords %in% elections) %>%
+  group_by(sep_keywords) %>%
+  summarise(keyword_violations = n()) %>%
+  arrange(desc(keyword_violations)) 
+
+elections <- c("Right to be elected", "Right to vote", "Freedom of association", "Freedom of opinion", "Participation in public affairs")
+
+# A tibble: 5 x 2
+                     sep_keywords keyword_violations
+                            <chr>              <int>
+1              Freedom of opinion                 56
+2 Participation in public affairs                 30
+3          Freedom of association                 24
+4                   Right to vote                 10
+5             Right to be elected                  1
+````
+These are surprisingly low figures, and "Freedom of opinion" is a rather broad category that isn't  only about elections. 
+
+But let's return to this finding about torture because we can also look at which countries are the main culprits. 
+
+````r
+#keywords by cases, filter torture, with confirmed merits and/or violations
+decisions %>%
+  mutate(sep_keywords = strsplit(as.character(Keywords), ",")) %>%
+  unnest(sep_keywords) %>%
+  group_by(sep_keywords, Outcome, Country) %>%
+  filter(Outcome == "merits - violation" & sep_keywords == "Torture / ill-treatment") %>%
+  summarise(keyword_violations = n()) %>%
+  arrange(desc(keyword_violations)) 
+  
+  # A tibble: 51 x 4
+# Groups:   sep_keywords, Outcome [1]
+              sep_keywords            Outcome            Country keyword_violations
+                     <chr>              <chr>              <chr>              <int>
+ 1 Torture / ill-treatment merits - violation            Jamaica                 54
+ 2 Torture / ill-treatment merits - violation            Algeria                 29
+ 3 Torture / ill-treatment merits - violation            Uruguay                 22
+ 4 Torture / ill-treatment merits - violation         Uzbekistan                 22
+ 5 Torture / ill-treatment merits - violation         Tajikistan                 18
+ 6 Torture / ill-treatment merits - violation            Denmark                 16
+ 7 Torture / ill-treatment merits - violation              Libya                 16
+ 8 Torture / ill-treatment merits - violation              Nepal                 14
+ 9 Torture / ill-treatment merits - violation Russian Federation                 14
+10 Torture / ill-treatment merits - violation             Canada                 13
+# ... with 41 more rows
+````
+
 
 
 ## How have the number of complaints progressed over the years?
+We can also look at how the number of complaints has fluctuated over the last 40 years. 
+
+````r
+decisions %>%
+  group_by(Year = floor_date(Date, "year")) %>%
+  summarize(complaints = n()) %>%
+  ggplot(aes(Year, complaints)) +
+  geom_line(color = "steelblue") +
+  theme_ipsum_rc(plot_title_size = 15, subtitle_size = 11) +
+  scale_x_datetime(date_labels = "%Y", date_breaks = "5 years") +
+  labs(x = NULL, 
+       y = "mumber of complaints",
+       title = "Number of complaints to the Human Rights Committee over time",
+       subtitle = "Summarised by year, 1,762 individual communications between 1976-2017",
+       caption = "Source: Centre for Civil and Political Rights Database")
+````
+
 ![complaints_by_year.jpeg]({{site.baseurl}}/img/complaints_by_year.jpeg)
+
+
 
 
 _Photo: "Human Right Council - 32nd Session," UN Photo / Jean-Marc Ferré  (CC BY-NC-ND 2.0)._
