@@ -1,10 +1,10 @@
 ---
 layout: post
-published: false
-title: >-
-  Which civil and political rights do countries violate? Analyzing 40 years of
-  treaty complaints
+published: true
+title: 'Which civil and political rights do countries violate? '
 date: '2018-01-13'
+subtitle: Analyzing 40 years of treaty complaints
+image: rayms.github.io/img/27698596140_58e569da23_z.jpg
 ---
 
 ![27698596140_58e569da23_z.jpg]({{site.baseurl}}/img/27698596140_58e569da23_z.jpg)
