@@ -3,7 +3,6 @@ layout: post
 title: How do election observers write about elections? A tidytext analysis
 published: true
 date: '2018-01-04'
-image: rayms.github.io/img/observers.jpg
 ---
 ![EU Election Observers in Tunisia]({{site.baseurl}}/img/observers.jpg)
 
