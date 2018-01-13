@@ -16,11 +16,11 @@ Interestingly, the ICCPR also has what is called an "Optional Protcol" (you can 
 But how often are complaints made to these expert treaty bodies? What kind of rights are being violated, and which countries are the main offenders? And how do these bodies rule on the cases brought before them? To explore these questions, I started with the ICCPR, since it's the treaty I am most familiar with in my field of work (elections), and I was interested to see if the rights that election observers often tout are also reflected in cases brought to the HRC.  
 
 
-## Getting the data
+# **Getting the data**
 Luckily, the [Centre for Civil and Political Rights](http://ccprcentre.org), an NGO based in Geneva, has an excellent [database](http://ccprcentre.org/database-decisions/) of case-law and briefs for complaints against countries party to the ICCPR's Optional Protcol. This database contains has table that has the title of the case (e.g., "Christopher Alger v. Australia 
 CCPR/C/120/D/2237/2013"), relevant articles of the treaty (eg., "Articles 17, 18"), keywords associated with the case (e.g. "Fair trial," "Privacy," etc.), the date, and the treaty body's ruling, or outcome of the case ("Merits - violation," "Merits - no violation", etc). 
 
-On the database page, I identified the table with all the information I needed and used ````rvest```` to get scraping. (I adapted this code from maellsalom's post about scraping the Guardian, which is also worth a read!). 
+On the database page, I identified the table with all the information I needed and used ````rvest```` to get scraping. (I adapted this code from [Maëlle Salmon's](https://twitter.com/ma_salmon) super [post](http://www.masalmon.eu/2017/10/02/guardian-experience/) about scraping the Guardian, which is a great read!). 
 
 ````r
 library(rvest)
@@ -331,7 +331,7 @@ decisions %>%
 
 ![violations_by_keyword.jpeg]({{site.baseurl}}/img/violations_by_keyword.jpeg)
 
-We find that, at least according to the HRC's rulings, countires are committing torture the most when violating rights. It's interesting that, although the ICCPR is regarded by election observers as **the** international treaty governing election-related rights, the complaints mechanism seems to be used for more serious violations. 
+We find that, at least according to the HRC's rulings, countires are committing torture more than any other violation of rights. It's interesting that, although the ICCPR is regarded by election observers as **the** international treaty governing election-related rights, the complaints mechanism seems to be used for more serious violations. 
 
 Below, I've grouped different rights and assigned them to "elections," then filtered the keywords on that basis to see how many cases might be related: 
 
@@ -409,6 +409,64 @@ decisions %>%
 ![complaints_by_year.jpeg]({{site.baseurl}}/img/complaints_by_year.jpeg)
 
 
+Overall, we see a pretty steady increase. Next, we can filter to see the trend for cases resulting in violations, no violations, or inadmissible. 
+
+````r
+decisions %>%
+  filter(Outcome %in% c("inadmissible", "merits - violation", "merits - no violation")) %>%
+  group_by(Year = floor_date(Date, "year"), Outcome) %>%
+  summarize(complaints = n()) %>%
+  ggplot(aes(Year, complaints, color = Outcome, group = Outcome)) +
+  geom_line() +
+  theme_ipsum_rc(plot_title_size = 15, subtitle_size = 11) +
+  scale_x_datetime(date_labels = "%Y", date_breaks = "5 years") +
+  labs(x = NULL, 
+       y = "mumber of complaints",
+       title = "Number of complaints to the Human Rights Committee over time",
+       subtitle = "Summarised by year, 1,762 individual communications between 1976-2017",
+       caption = "Source: Centre for Civil and Political Rights Database")
+  ````
+  ![complaints_timeseries_outcome.jpeg]({{site.baseurl}}/img/complaints_timeseries_outcome.jpeg)
+
+By around 2007, the number of cases ruled as inadmissible seems to have declined, while cases ruled as violations increased. 
+
+We can also look at a time-series over the years by grouping all countries together. We get a pretty messy plot with multiple time-series.
+
+![timeseries_country_year.jpeg]({{site.baseurl}}/img/timeseries_country_year.jpeg)
+
+There are some peaks in the chart that could be interesting. Let's highlight some of the countries to find out which ones they are: 
+
+````r
+decisions %>%
+	group_by(Year = floor_date(Date, "year"), Country, country_highlight = ifelse(Country == "Denmark","Denmark","Other")) %>%
+	summarize(complaints = n()) %>%
+	arrange(desc(complaints)) %>%
+	ggplot(aes(Year, complaints, group = Country)) +
+	geom_line(aes(color = country_highlight, alpha = country_highlight), size = 1, na.rm = T) +
+	scale_color_manual(values = c("firebrick3","steelblue")) + 
+	scale_alpha_manual(values = c(1,.2)) +
+	theme_ipsum_rc(plot_title_size = 15, subtitle_size = 11) +
+	scale_x_datetime(date_labels = "%Y", date_breaks = "5 years") +
+	labs(x = NULL, 
+		 y = "Number of complaints",
+		 title = "Denmark saw a sharp rise in the number of complaints\nto the Human Rights Committee",
+		 subtitle = "1,762 individual communications between 1976-2017",
+		 caption = "Source: Centre for Civil and Political Rights Database") +
+		 theme(legend.title = element_blank())
+````
+
+![denmark_complaints_year.jpeg]({{site.baseurl}}/img/denmark_complaints_year.jpeg)
+
+And a few other countries which peak at around 20 complaints throughout different points in time.  
+![complaints_jamaica.jpeg]({{site.baseurl}}/img/complaints_jamaica.jpeg)
+![complaints_belarus.jpeg]({{site.baseurl}}/img/complaints_belarus.jpeg)
+![complaints_spain.jpeg]({{site.baseurl}}/img/complaints_spain.jpeg)
+
+
+# **Conclusion**
+I learned A TON for this project. I was surprised at how easy it is to scrape data from html tables thanks to ```rvest``` and how to use ```purrr```, but I think I need a lot more practice with the latter to fully understand what's going on. Dealing with the regular expressions to get the country names into another column really, really drove me mad, and I wanted to give up at some points. But in the end it worked out. 
+
+The data on complaints made to the Human Rights Committee is quite interesting, and I think some of these findings warrant more research. Why does there appear to be an inverse relationship between _inadmissible_ and _violation_ rulings starting in 2007? What explanins some of the peaks and declines in cases against certain countries? Is there a relationship between certain rulings and countries before the HRC? The HRC itself is made up of 14 members who serve for terms of four years. Could the membership of the HRC influence the rulings on cases?
 
 
 _Photo: "Human Right Council - 32nd Session," UN Photo / Jean-Marc Ferré  (CC BY-NC-ND 2.0)._
