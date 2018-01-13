@@ -145,6 +145,7 @@ decisions$Country <- decisions$Country %>%
          "Republic of Guyana" = "Guyana",
          "Rep. of Korea" = "Republic of Korea",
          "Russian Federation (2016)" = "Russian Federation",
+         "Russia" = "Russian Federation",
          "Canada (2)" = "Canada",
          "s Poland" = "Poland",
          ".Greece" = "Greece",
@@ -243,8 +244,31 @@ What exactly is happening with the complaints process that _inadmissible_ decisi
 ## Which countries are often accused of violating civil and political rights?
 ![countries_accused.jpeg]({{site.baseurl}}/img/countries_accused.jpeg)
 
-What we're looking at here is the total number of times the country has been a defendant in a complaint. I find these results quite surprising. Some of the most advanced democracies in the world are in the top ten, alongside countries better known for their authoritarian tendencies. There could be many reasons for these findings though, such as strong advocates of rights who act as third parties and bring individual cases to the HRC; robust institutions like national human rights commissions, which also help to lodge such complaints; and, indeed, the simple fact that some countries here frequenty _do_ violate rights and citizens exhaust all other domestic remedies. 
+I find these results quite surprising. Some of the most advanced democracies in the world are in the top ten, alongside countries better known for their authoritarian tendencies. There could be many reasons for these findings though, such as human rights activists who act as third parties and bring cases to the HRC; robust institutions like national human rights commissions, which also help to lodge such complaints; or the simple fact that some countries frequenty _do_ violate civil and political rights. 
 
+But these are just countries accused of violations. What about countries where the HRC ruled they had indeed violated rights? We can filter by the outcome of the case and group the countries and outcomes together to see which countries have the most complaints ruled as violations. 
+
+```r
+decisions %>%
+    filter(Outcome == "merits - violation") %>%
+    group_by(Outcome, Country) %>%
+    summarise(cases = n()) %>%
+    arrange(desc(cases)) %>%
+    head(10) %>%
+    ggplot(aes(x = reorder(Country, cases), cases, fill = Country)) + 
+    geom_col(show.legend = FALSE) +
+    scale_fill_brewer(palette = "Paired") +
+    theme_ipsum_rc(plot_title_size = 15, subtitle_size = 11) +
+    labs(x = NULL, 
+         y = "number of complaints",
+        title = "Top 10 countries with the most complaints ruled as 'violtions'",
+        subtitle = "1,762 individual communications between 1976-2017",
+        caption = "Source: Centre for Civil and Political Rights Database") +
+  coord_flip() 
+  ````
+  ![top_violators.jpeg]({{site.baseurl}}/img/top_violators.jpeg)
+
+This chart is a little different. Jamaica is still the top offender, but there are now other countries in the chart like the Czech Republic and Algeria. And although the Netherlands and Denmark had been among the most accused countries, they are not among those with with confirmed violations.  
 
 
 ## How have the number of complaints progressed over the years?
