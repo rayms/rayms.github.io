@@ -53,6 +53,7 @@ decisions <- map_df(ccpr_decision_tables, ~as.data.frame(.x))
 
 I now had a dataframe with 1762 observations and 6 variables. Next, I renamed the columns and cleaned up some of the dataframe.
 
+
 ````r
 #add new column names
 decisions <- decisions %>% 
@@ -72,12 +73,15 @@ I knew that I wanted to add a Country column, and to do so I would need to extra
 [5] "Anton Batanov v. Russian Federation   \r\n                    CCPR/C/120/D/2532/2015"
 [6] "S. Z. v. Denmark                      \r\n                    CCPR/C/120/D/2625/2015"    
 ````
+
 Countries were always found after the "v." and before the carriage return (\r) and new line (\n). I had planned to use ````stringr```` to extract all of the country names based on a pattern, but unfortunately, my knowledge of regex wasn't quite up to stuff. After several hours of trying and nearly succeeding and then poring through Stack Overflow, I finally submitted a question, and someone helped me out. I love Stack Overflow. 
+
 
 ````
 #create Country column by using regex on Title column, extracting country names
 decisions$Country <- trimws(str_match(decisions$Title, "\\bv(?:s?\\.|:)?\\s*(.*)")[,2])
 ````
+
 Unfortunately, when I used this regex, it still didn't catch all of the countries. First, there were a number of countries that also had "(xxth session)" in the title. I had to identify and replace all of these. In other cases, I managed to extract the country name, as well as other text ("van der Hoot v. the Netherlands"), so I had to identify these rows and manually change them. There were also other quirks that weren't caught by the regular expresssion. All of it was a long, iterative process, and in the end, I still had to identify all of the unique problems and simply recode the values. This is how it went: 
 
 ````r
@@ -241,6 +245,8 @@ decisions %>%
 What exactly is happening with the complaints process that _inadmissible_ decisions are so high? We can't answer this question with the data we have here. But you can [read more](http://www.ohchr.org/EN/HRBodies/TBPetitions/Pages/IndividualCommunications.aspx#theadmissibility) about the admissibility of complaints and the many factors that committees must consider when making this decision. It seems extremely complex. 
 
 
+<br/>
+
 ## Which countries are often accused of violating civil and political rights?
 ![countries_accused.jpeg]({{site.baseurl}}/img/countries_accused.jpeg)
 
@@ -248,27 +254,11 @@ I find these results quite surprising. Some of the most advanced democracies in 
 
 But these are just countries accused of violations. What about countries where the HRC ruled they had indeed violated someone's rights? We can filter down to cases where the outcome was a violation, and group the countries and outcomes together. 
 
-```r
-decisions %>%
-    filter(Outcome == "merits - violation") %>%
-    group_by(Outcome, Country) %>%
-    summarise(cases = n()) %>%
-    arrange(desc(cases)) %>%
-    head(10) %>%
-    ggplot(aes(x = reorder(Country, cases), cases, fill = Country)) + 
-    geom_col(show.legend = FALSE) +
-    scale_fill_brewer(palette = "Paired") +
-    theme_ipsum_rc(plot_title_size = 15, subtitle_size = 11) +
-    labs(x = NULL, 
-         y = "number of complaints",
-        title = "Top 10 countries with the most complaints ruled as 'violtions'",
-        subtitle = "1,762 individual communications between 1976-2017",
-        caption = "Source: Centre for Civil and Political Rights Database") +
-  coord_flip() 
-  ````
 ![top_violations_countries.jpeg]({{site.baseurl}}/img/top_violations_countries.jpeg)
 
 This chart is a little different. Jamaica is still the top offender, but there are now other countries in the chart like the Czech Republic and Algeria. And although the Netherlands and Denmark had been among the most accused countries, they are not top among those with violations.  
+
+<br/>
 
 
 ## What kind of violations are countries committing? 
@@ -308,30 +298,11 @@ decisions %>%
  8 Respect for the inherent dignity of the human person merits - violation                 82
  9                                Freedom of expression merits - violation                 69
 10                         Expeditiousness of the trial merits - violation                 66
-
-#plot these results
-decisions %>%
-  mutate(sep_keywords = strsplit(as.character(Keywords), ",")) %>%
-  unnest(sep_keywords) %>%
-  filter(Outcome == "merits - violation") %>%
-  group_by(sep_keywords, Outcome) %>%
-  summarise(keyword_violations = n()) %>%
-  arrange(desc(keyword_violations)) %>%
-  head(10) %>%
-  ggplot(aes(x = reorder(sep_keywords, keyword_violations), keyword_violations, fill = sep_keywords)) + 
-  geom_bar(stat = "identity", show.legend = FALSE) + 
-  scale_fill_brewer(palette = "Paired") +
-  theme_ipsum_rc(plot_title_size = 15, subtitle_size = 11) +
-  labs(x = NULL, 
-       y = "Number of occurences",
-       title = "Torture is the leading violation of civil and political rights",
-       subtitle = "Keywords for complaints lodged against state parties, 1976-2017") +
-  coord_flip()
 ````
 
 ![violations_by_keyword.jpeg]({{site.baseurl}}/img/violations_by_keyword.jpeg)
 
-We find that, at least according to the HRC's rulings, countires are committing torture more than any other violation of rights. It's interesting that, although the ICCPR is regarded by election observers as **the** international treaty governing election-related rights, the complaints mechanism seems to be used for more serious violations. 
+We find that, at least according to the HRC's rulings, countires are violationg the prohibition on torture more than any other violation. It's interesting that, although the ICCPR is regarded by election observers as **the** international treaty governing election rights, the complaints mechanism seems to be used for more serious violations. 
 
 Below, I've grouped different rights and assigned them to "elections," then filtered the keywords on that basis to see how many cases might be related: 
 
@@ -367,9 +338,10 @@ decisions %>%
   group_by(sep_keywords, Outcome, Country) %>%
   filter(Outcome == "merits - violation" & sep_keywords == "Torture / ill-treatment") %>%
   summarise(keyword_violations = n()) %>%
-  arrange(desc(keyword_violations)) 
+  arrange(desc(keyword_violations))
   
-  # A tibble: 51 x 4
+  
+# A tibble: 51 x 4
 # Groups:   sep_keywords, Outcome [1]
               sep_keywords            Outcome            Country keyword_violations
                      <chr>              <chr>              <chr>              <int>
@@ -386,25 +358,10 @@ decisions %>%
 # ... with 41 more rows
 ````
 
-
+<br/>
 
 ## How have the number of complaints progressed over the years?
 We can also look at how the number of complaints has fluctuated over the last 40 years. 
-
-````r
-decisions %>%
-  group_by(Year = floor_date(Date, "year")) %>%
-  summarize(complaints = n()) %>%
-  ggplot(aes(Year, complaints)) +
-  geom_line(color = "steelblue") +
-  theme_ipsum_rc(plot_title_size = 15, subtitle_size = 11) +
-  scale_x_datetime(date_labels = "%Y", date_breaks = "5 years") +
-  labs(x = NULL, 
-       y = "mumber of complaints",
-       title = "Number of complaints to the Human Rights Committee over time",
-       subtitle = "Summarised by year, 1,762 individual communications between 1976-2017",
-       caption = "Source: Centre for Civil and Political Rights Database")
-````
 
 ![complaints_by_year.jpeg]({{site.baseurl}}/img/complaints_by_year.jpeg)
 
@@ -461,6 +418,9 @@ And a few other countries which peak at around 20 complaints throughout differen
 ![complaints_jamaica.jpeg]({{site.baseurl}}/img/complaints_jamaica.jpeg)
 ![complaints_belarus.jpeg]({{site.baseurl}}/img/complaints_belarus.jpeg)
 ![complaints_spain.jpeg]({{site.baseurl}}/img/complaints_spain.jpeg)
+
+<br/>
+
 
 
 # **Conclusion**
