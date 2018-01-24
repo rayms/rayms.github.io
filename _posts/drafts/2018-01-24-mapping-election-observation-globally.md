@@ -3,6 +3,8 @@ layout: post
 published: true
 title: Mapping election observation globally
 date: '2018-01-24'
+subtitle: ''
+image: ''
 ---
 
 In a [previous post](https://rayms.github.io/2018-01-04-election-observers/), I scraped 268 election observation final reports from organizations such as the European Union, the Organization for Security Cooperation in Europe, the National Democratic Institute, and the International Republican Institute. These reports were from election observation missions in 100 countries. 
@@ -113,3 +115,5 @@ ggplot() +
   theme(legend.position = "none")
 ```
 ![eom_map.png]({{site.baseurl}}/img/eom_map.png)
+
+[Larger version.](https://raw.githubusercontent.com/rayms/rayms.github.io/master/img/eom_map.png)
