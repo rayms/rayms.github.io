@@ -12,7 +12,7 @@ In a [previous post](https://rayms.github.io/2018-01-04-election-observers/), I 
 How easy would it be to map every country where election monitors observed elections? Pretty easy as it turns out!
 
 
-```{r}
+````r
 #load packages
 library(tidyverse)
 library(rvest)
@@ -57,7 +57,7 @@ common
 
 Only 81/100 countries matched. I suspected I had a problem with the spelling of the countries in my  data or the countries were not in the world dataframe. At any rate, I needed to recode a good number of the countries in order to the join to dataframes. 
 
-```{r}
+````r
 #recode the spelling of countries that didn't match
 elections_year$country <- recode(elections_year$country,
                                     "Guineabissau" = "Guinea-Bissau",
@@ -82,20 +82,20 @@ elections_year$country <- recode(elections_year$country,
 
 Only two elections from my dataset were not in the world map: Somaliland and the West Bank. I recoded Somaliland as Somalia and the West Bank is not in the world map data. I then joined the election data with the map data. 
 
-```{r}
+````r
 joined_map <- left_join(world, elections_year, by = c("region" = "country"))
 
 ```
 
 Next, I created a variable, called ```election_flag``` to indicate that the country had an election observation mission if the ```year``` variable had an observation. 
 
-```{r}
+````r
 joined_map <- joined_map %>% mutate(election_flag = ifelse(is.na(year),F,T))
 ```
 
 Finally, I plotted the map. 
 
-```{r}
+````r
 ggplot() +
   geom_cartogram(data = joined_map, map = joined_map, 
                  aes(x = long, y = lat, map_id  = region,  group = group, fill = election_flag)) +
