@@ -6,7 +6,7 @@ title: Mapping election observation globally
 
 In a [previous post](https://rayms.github.io/2018-01-04-election-observers/), I scraped 268 election observation final reports from organizations such as the European Union, the Organization for Security Cooperation in Europe, the National Democratic Institute, and the International Republican Institute. These reports were from election observation missions in 100 countries. 
 
-How easy would it be to map every country where these election observers monitored the polls? 
+How easy would it be to map every country where election monitors observed elections? Pretty easy as it turns out!
 
 
 ```{r}
