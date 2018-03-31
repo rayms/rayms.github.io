@@ -1,6 +1,6 @@
 ---
 layout: post
-published: false
+published: true
 title: 'What are Breitbart readers saying about the Mueller investigation? '
 date: '2018-03-31'
 ---
@@ -99,6 +99,3 @@ I wish I could say I was surprised by some of these findings. But given that Bre
 
 (_**Methodology**: 
 I retrieved Breitbart News articles related to Robert Mueller's investigation by searching the site for "Mueller," which yielded 80 articles. I also scraped the website for articles that had the "Robert Mueller" tag. In total, I retrieved 106 articles related to the Mueller investigation._)
-
-
-
