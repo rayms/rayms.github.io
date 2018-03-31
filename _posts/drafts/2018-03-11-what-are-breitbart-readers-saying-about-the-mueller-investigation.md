@@ -43,7 +43,7 @@ We see that the number of comments mentioning all three of them has stayed prett
 
 We can see that the number of comments mentioning 'uranium' peaked in October 2017. But what are these comments about? We can take a look with a sample.
 
-````r
+````{r}
 comments %>%
   filter(str_detect(post_raw_message, "uranium")) %>%
   select(post_raw_message)
@@ -59,7 +59,7 @@ comments %>%
 
 ````
 
-Comments seem to be largely about allegations of a deal between Clinton and Russia in which Clinton traded US stakes in uranium for donations. This story has been pretty well covered and debunked by credible media (and, FWIW, [Snopes](https://www.snopes.com/fact-check/hillary-clinton-uranium-russia-deal/). We can also use the ````gtrendsR```` package to grab data from the last 12 months of Google Trends to see when people were searching for the term 'uranium.' 
+Comments seem to be largely about allegations of a deal between Clinton and Russia in which Clinton traded US stakes in uranium for donations. This story has been pretty well covered and debunked by credible media (and, FWIW, [Snopes](https://www.snopes.com/fact-check/hillary-clinton-uranium-russia-deal/)). We can also use the ````gtrendsR```` package to grab data from the last 12 months of Google Trends to see when people were searching for the term 'uranium.' 
 
 
 ![uranium_trends.png]({{site.baseurl}}/img/uranium_trends.png)
