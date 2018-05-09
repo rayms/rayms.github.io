@@ -44,7 +44,7 @@ tmls<- vector("list", length(ashin_followers_filtered$screen_name))
 
 for (i in seq_along(tmls)) {
   tmls[[i]] <- get_timeline(ashin_followers_filtered$screen_name[i], n = 100)
-  ## assuming full rate limit at start, wait for fresh reset every 52 users
+  ## assuming full rate limit at start, wait for fresh reset every 170 users
   if (i %% 170L == 0L) {
     rl <- rate_limit("get_timeline")
     Sys.sleep(as.numeric(rl$reset, "secs"))
@@ -53,7 +53,7 @@ for (i in seq_along(tmls)) {
   cat(i, " ")
 }
 
-## merge into single data frame (do_call_rbind will preserve users data)
+## merge into single data frame 
 tmls <- do_call_rbind(tmls)
 
 #run botrnot on the followers
