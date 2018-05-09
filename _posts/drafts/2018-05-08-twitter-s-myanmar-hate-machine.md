@@ -4,8 +4,6 @@ published: true
 title: Twitter's Myanmar hate machine
 date: '2018-05-09'
 ---
-![alexandre-godreau-507278-unsplash.jpg]({{site.baseurl}}/img/alexandre-godreau-507278-unsplash.jpg)
-
 ## Nationalist netizens, cyborgs, and bots
 
 In August last year, militants from the Arakan Rohingya Salvation Army (ARSA) attacked police outposts in Myanmar's Rakhine State, triggering a massive military response and the current crisis. But alongside the military's campaign to drive ARSA out of Rakhine, another campaign was also underway, this one in social media. In the days following the attacks, I tracked a surge of new Twitter accounts that were using the hashtags, "#Bengali #terrorists," to distribute disturbing images from the conflict - mutiliated bodies, tasteless cartoons, and other images - and blame the Rohingya people at large for the attacks on the police. My findings were reported in [The Irrawaddy](https://www.irrawaddy.com/news/soar-dubious-twitter-accounts-since-rakhine-attacks.html) and covered elsewhere. 
