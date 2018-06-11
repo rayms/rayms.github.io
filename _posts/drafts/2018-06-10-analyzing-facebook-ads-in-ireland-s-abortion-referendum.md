@@ -43,3 +43,14 @@ targeted_ads_cleaned <- targeted_ads %>%
 
 
 
+
+
+## What was the emotional content of the Facebook ads targeting Irish voters? 
+
+We can use sentiment lexicons to determine the emotional content of text by looking at individual words. The NRC Word-Emotion Lexicon by Saif Mohammad and Peter Turney is a list of 14,182 unigrams (words) associated with eight basic emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust) and two binaries (positive and negative). The tidytext package, by Julia Silge and David Robinson, makes it easy to tokenize words and join them to the respective emotion categories and sentiments. 
+
+
+![facebook_ads_sentiments.png]({{site.baseurl}}/img/facebook_ads_sentiments.png)
+
+
+
